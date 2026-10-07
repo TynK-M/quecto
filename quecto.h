@@ -37,16 +37,24 @@ typedef void (*quecto_test_fn)(void);
 typedef struct {
   const char *name;
   quecto_test_fn fn;
+  unsigned skip : 1;
 } quecto_test;
 
 #if defined(__GNUC__) || defined(__clang__)
 
-#define QUECTO_SECTION __attribute__((used, section("quecto_tests")))
+#define QUECTO_SECTION                                                         \
+  __attribute__((used, section("quecto_tests"), aligned(_Alignof(quecto_test))))
 
 #define TEST(name)                                                             \
   static void quecto_test_##name(void);                                        \
   static const quecto_test quecto_entry_##name QUECTO_SECTION = {              \
-      #name, quecto_test_##name};                                              \
+      #name, quecto_test_##name, 0u};                                          \
+  static void quecto_test_##name(void)
+
+#define TEST_SKIP(name)                                                        \
+  static void quecto_test_##name(void);                                        \
+  static const quecto_test quecto_entry_##name QUECTO_SECTION = {              \
+      #name, quecto_test_##name, 1u};                                          \
   static void quecto_test_##name(void)
 
 #else
@@ -82,11 +90,20 @@ extern const quecto_test __stop_quecto_tests[];
 
 int quecto_run(void) {
   const quecto_test *test;
-  int failed = 0;
-  int total = 0;
+  size_t failed = 0;
+  size_t skipped = 0;
+  size_t total = 0;
 
   for (test = __start_quecto_tests; test < __stop_quecto_tests; test++) {
     total++;
+
+    if (test->skip) {
+      printf("[ SKIP ] %s\n", test->name);
+      skipped++;
+      continue;
+    }
+
+    quecto_failed = 0;
 
     printf("[ RUN  ] %s\n", test->name);
 
@@ -101,7 +118,8 @@ int quecto_run(void) {
     }
   }
 
-  printf("\n%d test%s, %d failed\n", total, total == 1 ? "" : "s", failed);
+  printf("\n%zu test%s, %zu failed, %zu skipped\n", total,
+         total == 1 ? "" : "s", failed, skipped);
 
   return failed != 0;
 }

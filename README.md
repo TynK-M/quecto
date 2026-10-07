@@ -77,6 +77,7 @@ The public API is intentionally tiny:
 
 ```c
 TEST(name)
+TEST_SKIP(name)
 
 ASSERT(expression)
 

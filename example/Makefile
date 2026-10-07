@@ -1,7 +1,10 @@
 CC = cc
 CFLAGS = -std=c11 -Wall -Wextra
 
-TESTS = test_basic.c test_failure.c main.c
+TESTS = main.c \
+		test_basic.c \
+		test_failure.c \
+		test_skip.c
 TARGET = tests
 
 $(TARGET): $(TESTS)
