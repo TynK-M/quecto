@@ -1,6 +1,6 @@
 /*
  * quecto.h - Tiny mono-header C testing library
- * Version 0.2
+ * Version 0.2.1
  *
  * Copyright (c) 2026 Matteo Pauroso
  *
@@ -118,8 +118,8 @@ int quecto_run(void) {
     }
   }
 
-  printf("\n%zu test%s, %zu failed, %zu skipped\n", total,
-         total == 1 ? "" : "s", failed, skipped);
+  printf("\n%zu test%s, %zu succeeded, %zu failed, %zu skipped\n", total,
+         total == 1 ? "" : "s", total - failed - skipped, failed, skipped);
 
   return failed != 0;
 }
