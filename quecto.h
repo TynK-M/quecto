@@ -1,6 +1,6 @@
 /*
  * quecto.h - Tiny mono-header C testing library
- * Version 0.1
+ * Version 0.2
  *
  * Copyright (c) 2026 Matteo Pauroso
  *
